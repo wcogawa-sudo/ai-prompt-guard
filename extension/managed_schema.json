@@ -1,0 +1,42 @@
+{
+  "type": "object",
+  "properties": {
+    "policyJson": {
+      "title": "Prompt policy (JSON string)",
+      "description": "Full policy as a JSON string (same shape as policy.default.json). Overrides the bundled default.",
+      "type": "string"
+    },
+    "collectorUrl": {
+      "title": "Log collector URL",
+      "type": "string"
+    },
+    "collectorToken": {
+      "title": "Log collector bearer token",
+      "type": "string"
+    },
+    "userName": {
+      "title": "User name reported in logs",
+      "type": "string"
+    },
+    "deviceId": {
+      "title": "Device / host name reported in logs",
+      "type": "string"
+    },
+    "group": {
+      "title": "Policy group (e.g. Finance)",
+      "type": "string"
+    },
+    "warningsEnabled": {
+      "title": "Show a warning before redacting (true/false)",
+      "type": "boolean"
+    },
+    "peopleNames": {
+      "title": "Names to always protect (one per line)",
+      "type": "string"
+    },
+    "evidenceConfig": {
+      "title": "Evidence public key block (JSON from keygen)",
+      "type": "string"
+    }
+  }
+}

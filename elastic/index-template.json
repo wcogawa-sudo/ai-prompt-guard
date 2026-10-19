@@ -1,0 +1,33 @@
+{
+  "index_patterns": ["prompt-guard-events*"],
+  "priority": 200,
+  "template": {
+    "settings": { "number_of_shards": 1, "number_of_replicas": 0 },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "event": { "properties": { "action": { "type": "keyword" }, "ingested": { "type": "date" } } },
+        "user": { "properties": { "name": { "type": "keyword" }, "group": { "type": "keyword" }, "decision": { "type": "keyword" } } },
+        "host": { "properties": { "name": { "type": "keyword" } } },
+        "ai": { "properties": {
+          "site": { "type": "keyword" }, "adapter": { "type": "keyword" },
+          "adapter_degraded": { "type": "boolean" }, "conversation_hash": { "type": "keyword" } } },
+        "prompt": { "properties": { "redacted": { "type": "text" }, "length": { "type": "integer" } } },
+        "detections": { "type": "nested", "properties": { "type": { "type": "keyword" }, "count": { "type": "integer" } } },
+        "policy": { "properties": { "action": { "type": "keyword" }, "version": { "type": "integer" } } },
+        "alert": { "properties": { "soc": { "type": "boolean" } } },
+        "override": { "properties": { "justification": { "type": "text" } } },
+        "false_positive": { "properties": { "types": { "type": "keyword" } } },
+        "collector": { "properties": { "rescrubbed": { "type": "boolean" } } },
+        "stage": { "type": "keyword" },
+        "layer": { "type": "keyword" },
+        "bulk": { "type": "boolean" },
+        "extension": { "properties": { "version": { "type": "keyword" } } },
+        "browser": { "properties": { "user_agent": { "type": "keyword", "ignore_above": 512 } } },
+        "tab": { "properties": { "url_host": { "type": "keyword" } } },
+        "source": { "properties": { "ip": { "type": "ip" } } }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+keys/*.pem
+collector/data/
+dist/
+test/e2e/fixtures/*.bundle.js
+test/e2e/.tmp/
+keys/*.key

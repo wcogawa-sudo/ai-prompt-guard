@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI tool not approved</title>
+<style>
+  :root { --bg:#f8fafc; --card:#fff; --fg:#0f172a; --muted:#475569; --accent:#1d4ed8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f172a; --card:#1e293b; --fg:#e2e8f0; --muted:#94a3b8; --accent:#93c5fd; } }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); color:var(--fg); font:15px/1.55 system-ui, sans-serif; padding:16px; box-sizing:border-box; }
+  .card { background:var(--card); max-width:480px; border-radius:14px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.12); }
+  h1 { font-size:20px; margin:0 0 8px; }
+  p { margin:8px 0; color:var(--muted); }
+  a.btn { display:inline-block; margin-top:14px; padding:10px 16px; background:var(--accent); color:#fff; border-radius:8px; text-decoration:none; }
+  @media (prefers-color-scheme: dark) { a.btn { color:#0f172a; } }
+  code { font-size:13px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>This AI tool isn't approved for work use</h1>
+    <p><code id="site"></code> isn't on your organisation's list of approved AI tools, because data sent to it isn't protected.</p>
+    <p>Please use the approved tool instead. It works the same way, and sensitive information is protected automatically.</p>
+    <a class="btn" id="go" href="#" hidden>Open the approved AI tool</a>
+  </div>
+<script src="blocked.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Mock ChatGPT</title></head>
+<body data-editor-attrs='{"id":"prompt-textarea"}'>
+  <form onsubmit="return false">
+    <div id="mount"></div>
+    <button id="send" type="button" data-testid="send-button">Send</button>
+  </form>
+  <label>Custom instructions <textarea id="settings"></textarea></label>
+  <!-- Editing an earlier message (like ChatGPT): its own textarea + Send/Cancel; Enter submits -->
+  <div class="message" id="edit-wrap">
+    <div class="bubble"><textarea id="edit-box">old message</textarea></div>
+    <div class="actions"><button type="button" id="edit-cancel">Cancel</button><button type="button" id="edit-send">Send</button></div>
+  </div>
+  <script>
+    (() => {
+      const box = document.getElementById("edit-box");
+      const submit = () => { (window.__sent = window.__sent || []).push({ text: box.value, edited: true }); };
+      document.getElementById("edit-send").addEventListener("click", submit);
+      box.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } });
+    })();
+  </script>
+  <!-- Like real sites: the attach button opens a picker on an input that is NOT in the document -->
+  <button id="attach" type="button" aria-label="Attach files">📎</button>
+  <!-- and a visible input as well -->
+  <input id="visible-file" type="file">
+  <script>
+    window.__files = [];
+    const record = (list) => { for (const f of list) window.__files.push(f.name); };
+    const hidden = document.createElement("input");
+    hidden.type = "file";
+    hidden.addEventListener("change", () => record(hidden.files));
+    document.getElementById("attach").addEventListener("click", () => hidden.click());
+    document.getElementById("visible-file").addEventListener("change", (e) => record(e.target.files));
+    document.addEventListener("dragover", (e) => e.preventDefault());
+    document.addEventListener("drop", (e) => { e.preventDefault(); record(e.dataTransfer.files); });
+  </script>
+  <script src="editor.bundle.js"></script>
+</body></html>

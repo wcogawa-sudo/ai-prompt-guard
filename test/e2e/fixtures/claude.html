@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Mock Claude</title></head>
+<body data-editor-attrs='{"role":"textbox"}'>
+  <div id="mount"></div>
+  <button id="send" type="button" aria-label="Send message">↑</button>
+  <!-- Editing an earlier message (like Claude): textarea + Save/Cancel -->
+  <div id="edit-wrap"><textarea id="edit-box">old message</textarea>
+    <button type="button" id="edit-cancel">Cancel</button><button type="button" id="edit-save">Save</button></div>
+  <script>
+    document.getElementById("edit-save").addEventListener("click", () => {
+      (window.__sent = window.__sent || []).push({ text: document.getElementById("edit-box").value, edited: true });
+    });
+  </script>
+  <script src="editor.bundle.js"></script>
+</body></html>

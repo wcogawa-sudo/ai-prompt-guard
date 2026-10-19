@@ -1,0 +1,37 @@
+Windows Registry Editor Version 5.00
+
+; Force-install AI Prompt Guard in Chrome and Edge and push its settings.
+; In Intune, prefer Settings Catalog / ADMX ("Configure the list of
+; force-installed apps and extensions") over raw .reg; this file shows the
+; resulting values. Replace YOUR-HOST and the token.
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist]
+"1"="nkfbgnhhnhdpimbkgkbeddiijbeoklgc;https://YOUR-HOST/prompt-guard/updates.xml"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]
+"IncognitoModeAvailability"=dword:00000001
+; DevTools stay available for everyone's work; value 0 only blocks inspecting
+; extensions the company force-installed (i.e. Prompt Guard itself).
+"DeveloperToolsAvailability"=dword:00000000
+"BrowserGuestModeEnabled"=dword:00000000
+; Optional, for groups that never build browser extensions:
+; "ExtensionDeveloperModeSettings"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\nkfbgnhhnhdpimbkgkbeddiijbeoklgc\policy]
+"collectorUrl"="https://collector.lab.local"
+"collectorToken"="CHANGE-ME"
+"group"="Ops"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist]
+"1"="nkfbgnhhnhdpimbkgkbeddiijbeoklgc;https://YOUR-HOST/prompt-guard/updates.xml"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge]
+"InPrivateModeAvailability"=dword:00000001
+"DeveloperToolsAvailability"=dword:00000000
+"BrowserGuestModeEnabled"=dword:00000000
+; Optional: "ExtensionDeveloperModeSettings"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\3rdparty\extensions\nkfbgnhhnhdpimbkgkbeddiijbeoklgc\policy]
+"collectorUrl"="https://collector.lab.local"
+"collectorToken"="CHANGE-ME"
+"group"="Ops"

@@ -1,0 +1,168 @@
+{
+  "version": 3,
+  "rules": [
+    {
+      "type": "SA_ID_NUMBER",
+      "action": "redact_warn",
+      "min_confidence": 0.5
+    },
+    {
+      "type": "CREDIT_CARD",
+      "action": "redact_silent",
+      "alert_soc": true
+    },
+    {
+      "type": "API_SECRET",
+      "action": "redact_silent",
+      "alert_soc": true
+    },
+    {
+      "type": "PASSPORT",
+      "action": "redact_warn",
+      "min_confidence": 0.55
+    },
+    {
+      "type": "BANK_ACCOUNT",
+      "action": "redact_warn"
+    },
+    {
+      "type": "TAX_NUMBER",
+      "action": "redact_warn"
+    },
+    {
+      "type": "MEMBER_NUMBER",
+      "action": "redact_silent"
+    },
+    {
+      "type": "EMAIL",
+      "action": "redact_silent"
+    },
+    {
+      "type": "PHONE_NUMBER",
+      "action": "redact_silent",
+      "min_confidence": 0.8
+    },
+    {
+      "type": "PERSON_NAME",
+      "action": "redact_silent",
+      "min_confidence": 0.6
+    },
+    {
+      "type": "ADDRESS",
+      "action": "redact_silent"
+    },
+    {
+      "type": "DATE_OF_BIRTH",
+      "action": "redact_silent"
+    },
+    {
+      "type": "LONG_NUMBER",
+      "action": "redact_silent"
+    },
+    {
+      "type": "IP_ADDRESS",
+      "action": "log_only"
+    },
+    {
+      "type": "KEYWORD",
+      "values": [
+        "Project Falcon",
+        "Payroll run"
+      ],
+      "action": "redact_warn"
+    }
+  ],
+  "bulk_threshold": {
+    "count": 10,
+    "action": "redact_warn",
+    "alert_soc": true,
+    "types": [
+      "SA_ID_NUMBER",
+      "CREDIT_CARD",
+      "PASSPORT",
+      "BANK_ACCOUNT",
+      "TAX_NUMBER"
+    ]
+  },
+  "sites": {
+    "approved": [
+      "chatgpt.com",
+      "chat.openai.com",
+      "claude.ai"
+    ],
+    "unapproved": [
+      "gemini.google.com",
+      "copilot.microsoft.com",
+      "perplexity.ai",
+      "chat.deepseek.com",
+      "deepseek.com",
+      "chat.mistral.ai",
+      "grok.com",
+      "poe.com",
+      "character.ai",
+      "meta.ai",
+      "you.com",
+      "chat.qwen.ai",
+      "kimi.com",
+      "kimi.moonshot.cn",
+      "chatglm.cn",
+      "pi.ai"
+    ],
+    "unapproved_action": "redirect",
+    "redirect_to": "https://claude.ai"
+  },
+  "warning": {
+    "enabled": true,
+    "snooze_hours": 8,
+    "allow_false_positive_report": true
+  },
+  "override_unredacted": {
+    "enabled": false,
+    "require_justification": true,
+    "alert_soc": true
+  },
+  "groups": {
+    "Finance": {
+      "SA_ID_NUMBER": "redact_silent"
+    }
+  },
+  "evidence": {
+    "enabled": false,
+    "public_key_spki": "",
+    "key_id": ""
+  },
+  "files": {
+    "action": "allow",
+    "alert_soc": false
+  },
+  "scope": {
+    "mode": "work_network",
+    "probe_url": "",
+    "hours": {
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "start": "07:00",
+      "end": "18:00"
+    }
+  },
+  "people": {
+    "names": [],
+    "first_names": [],
+    "last_names": []
+  },
+  "network": {
+    "enabled": true,
+    "action": "redact",
+    "types": [
+      "SA_ID_NUMBER",
+      "CREDIT_CARD",
+      "API_SECRET"
+    ],
+    "alert_soc": true
+  }
+}

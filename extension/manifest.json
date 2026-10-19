@@ -1,0 +1,82 @@
+{
+  "manifest_version": 3,
+  "name": "AI Prompt Guard",
+  "version": "0.1.0",
+  "description": "Redacts sensitive data from AI prompts, warns per company policy, and logs prompt activity.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4lU4L6E1j+XPEapjfwO1dgB0w44K94EnP0zt6gb/IzH759hIltQNYTnAsLFnNGadF1wdQQ+uVL7LheX/pnk7Y9dmsmIdLdjbTM0KO54+ptk5cZd0EiDArnQfCVLAKN5q4AM7zBgiBYgA4hfss2ZIhIgLTqmsuZZzqtIARCuTD8huW/hGqDhUnJLReRdBIFL/sSEgLqV+v+BmGiLWZpH/OfUXJ5f4G5DBOn7iJCrRTH7nIBZTyAAwm9xARQhCtpv0BGf/D0p3CzOXKAwWKwfRyCs5T270uQMSC+Q8HXpXdYZhlUgcc5zEguLBpHZTyUhxf8Q8KhigbPd9cDSEzEh5TwIDAQAB",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "src/names.js",
+        "src/words.js",
+        "src/detectors.js",
+        "src/policy.js",
+        "src/netscan.js",
+        "src/adapters.js",
+        "src/ui.js",
+        "src/content.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "src/page-files.js",
+        "src/page-net.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "storage": {
+    "managed_schema": "managed_schema.json"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "blocked.html",
+        "blocked.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "AI Prompt Guard",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  }
+}

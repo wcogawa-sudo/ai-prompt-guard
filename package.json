@@ -1,0 +1,29 @@
+{
+  "name": "ai-prompt-guard",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser extension that redacts sensitive data from AI prompts, warns per admin policy, and logs prompt activity.",
+  "scripts": {
+    "test": "node --test test/unit.test.js test/evidence.test.js",
+    "test:e2e": "node test/e2e/build-fixtures.js && node --test --test-concurrency=1 test/e2e/e2e.test.js",
+    "collector": "node collector/server.js",
+    "package": "node scripts/package.js",
+    "evidence": "node scripts/evidence.js",
+    "logs": "node scripts/logs.js",
+    "lab": "scripts/lab.sh",
+    "lab:reset": "scripts/lab.sh --reset-storage",
+    "security": "node scripts/security-check.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.12",
+    "prosemirror-schema-basic": "^1.2.5",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.42.6",
+    "puppeteer-core": "^25.12.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

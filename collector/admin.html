@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Guard Admin</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cpath d='M64 8 L112 26 V60 C112 92 90 114 64 122 C38 114 16 92 16 60 V26 Z' fill='%232a78d6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c66;
+    --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --good: #0ca30c; --good-text: #006300; --critical: #d03b3b;
+    --accent: #2a78d6; --wash: rgba(42,120,214,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #989690;
+      --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+      --good-text: #0ca30c; --accent: #3987e5; --wash: rgba(57,135,229,0.14);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #989690;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --good-text: #0ca30c; --accent: #3987e5; --wash: rgba(57,135,229,0.14);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 24px; border-bottom: 1px solid var(--grid); background: var(--surface); }
+  header h1 { font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .tabs { display: flex; gap: 4px; margin-left: auto; }
+  .tabs button, .presets button { font: inherit; border: 1px solid var(--grid); background: var(--surface); color: var(--ink-2); padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  .tabs button[aria-selected="true"], .presets button[aria-pressed="true"] { background: var(--wash); color: var(--ink); border-color: var(--accent); font-weight: 600; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 48px; }
+  .filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 4px 0 16px; }
+  .presets { display: flex; gap: 4px; flex-wrap: wrap; }
+  .presets button { white-space: nowrap; }
+  select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--grid); background: var(--surface); color: var(--ink); }
+  .muted { color: var(--muted); }
+  .small { font-size: 12.5px; }
+  .card { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 16px 18px; }
+  .grid { display: grid; gap: 16px; }
+  .tiles { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 16px; }
+  .two { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); margin-bottom: 16px; }
+  .tile .label { color: var(--ink-2); font-size: 13px; }
+  .tile .value { font-size: 28px; font-weight: 600; line-height: 1.2; margin-top: 4px; }
+  .tile .delta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .hero { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+  .hero .value { font-size: 56px; font-weight: 600; line-height: 1; }
+  .hero .label { font-size: 15px; color: var(--ink-2); margin-bottom: 6px; }
+  .summary { font-size: 17px; line-height: 1.55; margin: 0 0 18px; max-width: 900px; }
+  h2 { font-size: 15px; margin: 0 0 12px; }
+  .card-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .card-head h2 { margin: 0; }
+  .card-head .link { margin-left: auto; }
+  .link { background: none; border: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0; text-decoration: underline; font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 1px 8px; border: 1px solid var(--grid); border-radius: 999px; font-size: 12px; margin: 1px 4px 1px 0; color: var(--ink-2); white-space: nowrap; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 4px 0 8px; font-size: 12.5px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--ring); box-shadow: 0 6px 20px rgba(0,0,0,.12); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; min-width: 150px; z-index: 5; }
+  .tooltip .t-head { color: var(--muted); margin-bottom: 4px; }
+  .tooltip .row { display: flex; align-items: center; gap: 8px; }
+  .tooltip .row b { min-width: 26px; text-align: right; }
+  .tooltip .key { width: 12px; height: 2px; display: inline-block; }
+  .bars .bar-row { display: grid; grid-template-columns: minmax(110px, 160px) 1fr 44px; gap: 10px; align-items: center; margin: 7px 0; font-size: 13px; }
+  .bars .track { height: 10px; background: var(--surface-2); border-radius: 0 4px 4px 0; }
+  .bars .fill { height: 10px; background: var(--s1); border-radius: 0 4px 4px 0; }
+  .attention li { margin: 6px 0; }
+  .attention { padding-left: 18px; margin: 0; }
+  .status { display: inline-flex; gap: 6px; align-items: center; font-weight: 600; }
+  .status.ok { color: var(--good-text); }
+  .status.bad { color: var(--critical); }
+  .feed td.prompt { max-width: 520px; white-space: pre-wrap; word-break: break-word; }
+  .empty { color: var(--muted); padding: 16px 0; }
+  .ph { background: var(--wash); border-radius: 4px; padding: 0 3px; }
+  .fade { opacity: .55; transition: opacity .2s; }
+  [hidden] { display: none !important; }
+  .clickable { cursor: pointer; }
+  .card.tile.clickable:hover, .card.tile.clickable:focus-visible { border-color: var(--accent); }
+  .bar-row.clickable:hover > div:first-child, .legend .clickable:hover { text-decoration: underline; }
+  .clickable:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  path.clickable:hover { fill-opacity: .8; }
+  .legend button { font: inherit; background: none; border: none; color: inherit; padding: 2px 0; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .chip.clickable:hover { border-color: var(--accent); color: var(--ink); }
+  .hint { font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+  .drill-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 20; }
+  .drill { position: fixed; top: 0; right: 0; bottom: 0; width: min(760px, 100vw); background: var(--surface); z-index: 21;
+    box-shadow: -10px 0 30px rgba(0,0,0,.2); display: flex; flex-direction: column; }
+  .drill header { position: sticky; top: 0; }
+  .drill .body { overflow: auto; padding: 16px 24px 32px; }
+  .drill h2 { font-size: 16px; }
+  .drill .close { margin-left: auto; font: inherit; font-size: 20px; line-height: 1; background: none; border: 1px solid var(--grid); color: var(--ink); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; }
+  .drill .who { margin-bottom: 20px; }
+  .user-link { background: none; border: none; color: var(--accent); font: inherit; padding: 0; cursor: pointer; text-decoration: underline; }
+  .table-wrap { overflow-x: auto; }
+  .unlock-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto; }
+  .unlock-bar + .tabs { margin-left: 0; }
+  .unlock { font: inherit; border: 1px solid var(--grid); background: var(--surface); color: var(--ink); padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 31; width: min(460px, calc(100vw - 32px));
+    background: var(--surface); color: var(--ink); border-radius: 12px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+  #unlock-backdrop { z-index: 30; }
+  .modal label { display: block; margin: 10px 0 0; font-size: 13px; color: var(--ink-2); }
+  .modal input { display: block; width: 100%; margin-top: 4px; font: inherit; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--grid); background: var(--page); color: var(--ink); }
+  .modal .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .modal .row button { font: inherit; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--grid); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .modal .row .primary-btn { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #u-msg { margin-top: 10px; min-height: 1.4em; }
+  #u-msg.bad { color: var(--critical); }
+  .orig-toggle { display: inline-block; margin-top: 4px; font-size: 12px; }
+  mark.orig { background: rgba(208,59,59,.15); color: inherit; border-radius: 3px; padding: 0 2px; outline: 1px solid rgba(208,59,59,.35); }
+  .orig-label { font-size: 11px; color: var(--critical); font-weight: 600; letter-spacing: .02em; }
+  @media (max-width: 640px) {
+    .drill .body { padding: 12px 16px 24px; }
+    /* Wide tables become stacked cards on phones: each cell shows its column name. */
+    .stack table thead { display: none; }
+    .stack table, .stack tbody, .stack tr, .stack td { display: block; width: 100%; }
+    .stack tr { border-bottom: 1px solid var(--grid); padding: 8px 0; }
+    .stack td { border: none; padding: 3px 0; display: grid; grid-template-columns: 96px 1fr; gap: 8px; text-align: left !important; }
+    .stack td::before { content: attr(data-label); color: var(--muted); font-size: 12px; }
+    .stack td > * { justify-self: start; text-align: left; }
+  }
+  @media (max-width: 640px) {
+    header, main { padding-left: 16px; padding-right: 16px; }
+    .hero .value { font-size: 44px; }
+    .tabs { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ Prompt Guard <span class="muted" style="font-weight:400">· AI usage &amp; data protection</span></h1>
+  <div class="unlock-bar">
+    <button type="button" id="unlock-btn" class="unlock">🔓 Unlock originals</button>
+    <span id="unlocked" hidden>
+      <span class="status ok">🔓 Originals unlocked</span>
+      <span class="muted small" id="unlock-timer"></span>
+      <button type="button" class="link" id="reveal-all">Show all on screen</button>
+      <button type="button" class="unlock" id="lock-btn">🔒 Lock</button>
+    </span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-exec" aria-selected="true">Executive</button>
+    <button role="tab" id="tab-analyst" aria-selected="false">Analyst</button>
+  </div>
+</header>
+
+<main>
+  <div class="filters">
+    <div class="presets" role="group" aria-label="Date range">
+      <button data-days="1">Today</button>
+      <button data-days="7" aria-pressed="true">Last 7 days</button>
+      <button data-days="30">Last 30 days</button>
+      <button data-days="90">Last 90 days</button>
+    </div>
+    <span class="analyst-only" hidden>
+      <select id="f-user" aria-label="User"><option value="">All users</option></select>
+      <select id="f-site" aria-label="AI site"><option value="">All AI sites</option></select>
+    </span>
+    <span class="muted small" id="updated"></span>
+  </div>
+
+  <!-- ================= EXECUTIVE ================= -->
+  <section id="view-exec">
+    <p class="summary" id="exec-summary"></p>
+    <div class="hero">
+      <div>
+        <div class="label">Sensitive-data leaks prevented</div>
+        <div class="value" id="hero-value">–</div>
+      </div>
+      <div class="muted" id="hero-delta"></div>
+    </div>
+    <div class="grid tiles" id="exec-tiles"></div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h2>Sensitive data stopped, per day</h2><button class="link" data-table="exec-chart">Show table</button></div>
+        <p class="hint">Click a bar or a legend item to see who and what.</p>
+        <div class="legend" id="exec-legend"></div>
+        <div class="chart" id="exec-chart"></div>
+      </div>
+      <div class="card">
+        <h2>Needs attention</h2>
+        <div id="exec-attention"></div>
+        <p class="muted small" style="margin:10px 0 0">Names and prompt details are in the Analyst view, for authorised reviewers only.</p>
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h2>Which AI tools staff use</h2>
+        <div class="bars" id="exec-sites"></div>
+      </div>
+      <div class="card">
+        <h2>What kind of data was stopped</h2>
+        <div class="bars" id="exec-categories"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ANALYST ================= -->
+  <section id="view-analyst" hidden>
+    <div class="grid tiles" id="an-tiles"></div>
+    <div class="grid two">
+      <div class="card">
+        <div class="card-head"><h2>Prompts per day</h2><button class="link" data-table="an-prompts">Show table</button></div>
+        <p class="hint">Click a day to see its prompts.</p>
+        <div class="chart" id="an-prompts"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Violations per day, by outcome</h2><button class="link" data-table="an-violations">Show table</button></div>
+        <p class="hint">Click a bar or a legend item to see who and what.</p>
+        <div class="legend" id="an-legend"></div>
+        <div class="chart" id="an-violations"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h2>AI sites</h2>
+      <div id="an-sites"></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head"><h2>Activity monitor</h2><span class="muted small">Live · refreshes every 5 s · prompts shown redacted</span></div>
+      <div id="an-feed" class="stack"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Evidence access audit</h2><span id="an-chain"></span></div>
+      <div id="an-audit"></div>
+      <p class="muted small" style="margin:10px 0 0">Originals can only be opened with the private key: <code>npm run evidence -- view &lt;id&gt; --analyst NAME --reason "…"</code></p>
+    </div>
+  </section>
+</main>
+
+<div class="drill-backdrop" id="unlock-backdrop" hidden></div>
+<div class="modal" id="unlock-dialog" role="dialog" aria-modal="true" aria-labelledby="unlock-title" hidden>
+  <h2 id="unlock-title">Unlock original prompts</h2>
+  <p class="muted small">Your private key is opened <b>in this browser tab only</b>. It is never uploaded. Every original you view is recorded in the evidence access log with your name and reason.</p>
+  <label>Your name <input id="u-analyst" autocomplete="name"></label>
+  <label>Reason (ticket / incident) <input id="u-reason" placeholder="e.g. INC-1042 data leak review"></label>
+  <label>Private key file <input id="u-key" type="file" accept=".key,application/json"></label>
+  <label>Passphrase <input id="u-pass" type="password" autocomplete="off"></label>
+  <div class="muted small" id="u-msg" role="status"></div>
+  <div class="row">
+    <button type="button" id="u-cancel">Cancel</button>
+    <button type="button" id="u-ok" class="primary-btn">Unlock</button>
+  </div>
+</div>
+<div class="drill-backdrop" id="drill-backdrop" hidden></div>
+<div class="drill" id="drill" role="dialog" aria-modal="true" aria-labelledby="drill-title" hidden>
+  <header>
+    <div>
+      <h2 id="drill-title" style="margin:0"></h2>
+      <div class="muted small" id="drill-sub"></div>
+    </div>
+    <button class="close" id="drill-close" aria-label="Close">×</button>
+  </header>
+  <div class="body">
+    <div class="who">
+      <h2>Who</h2>
+      <div id="drill-users" class="stack"></div>
+    </div>
+    <h2>Prompts</h2>
+    <div id="drill-events" class="stack"></div>
+  </div>
+</div>
+
+<script src="/admin/crypto.js"></script>
+<script src="/admin/app.js"></script>
+</body>
+</html>

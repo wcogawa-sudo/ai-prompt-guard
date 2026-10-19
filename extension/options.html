@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Prompt Guard settings</title>
+<style>
+  :root { --bg:#f8fafc; --card:#fff; --fg:#0f172a; --muted:#475569; --line:#cbd5e1; --accent:#1d4ed8; --bad:#b91c1c; --good:#15803d; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f172a; --card:#1e293b; --fg:#e2e8f0; --muted:#94a3b8; --line:#475569; --accent:#93c5fd; --bad:#fca5a5; --good:#86efac; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui, sans-serif; }
+  main { max-width:680px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:16px 0; }
+  h2 { font-size:15px; margin:0 0 10px; }
+  label { display:block; margin:10px 0 4px; font-weight:600; }
+  input, textarea { width:100%; box-sizing:border-box; padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font:inherit; }
+  textarea { font:12.5px/1.45 ui-monospace, monospace; min-height:160px; }
+  input:disabled, textarea:disabled { opacity:.6; }
+  .muted { color:var(--muted); font-size:12.5px; }
+  button { margin-top:12px; padding:8px 14px; border-radius:8px; border:1px solid var(--accent); background:var(--accent); color:#fff; font:inherit; cursor:pointer; }
+  button.secondary { background:transparent; color:var(--accent); }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 12px; margin:0; }
+  dt { color:var(--muted); } dd { margin:0; word-break:break-all; }
+  .ok { color:var(--good); } .bad { color:var(--bad); }
+  label.check { display:flex; gap:8px; align-items:center; font-weight:600; }
+  label.check input { width:auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>AI Prompt Guard</h1>
+  <p class="muted">Lab settings. Fields set by your organisation's enterprise policy are locked and shown greyed out.</p>
+
+  <section>
+    <h2>Status</h2>
+    <dl id="status"></dl>
+    <button class="secondary" id="flush" type="button">Send queued logs now</button>
+  </section>
+
+  <section>
+    <h2>Log collector</h2>
+    <label for="collectorUrl">Collector URL</label>
+    <input id="collectorUrl" placeholder="e.g. http://127.0.0.1:8787 (required)">
+    <label for="collectorToken">Collector token</label>
+    <input id="collectorToken" type="password">
+    <label for="userName">User name</label>
+    <input id="userName">
+    <label for="deviceId">Device name</label>
+    <input id="deviceId" placeholder="optional, auto-generated if empty">
+    <label for="group">Policy group</label>
+    <input id="group" placeholder="e.g. Finance (optional)">
+  </section>
+
+  <section>
+    <h2>Warnings</h2>
+    <label class="check"><input id="warningsEnabled" type="checkbox"> Show a warning before redacting</label>
+    <p class="muted">On: the user sees what was found and confirms before the redacted prompt is sent. Off: everything is redacted silently with a small "Protected" notice. Blocks apply either way.</p>
+  </section>
+
+  <section>
+    <h2>Names to always protect</h2>
+    <p class="muted">One full name per line (e.g. managers, staff, clients). These are always redacted, in any capitalisation. In production this list comes from the org's directory via policy.</p>
+    <textarea id="peopleNames" spellcheck="false" placeholder="e.g. Nomsa Kwetana" style="min-height:90px"></textarea>
+  </section>
+
+  <section>
+    <h2>Keep encrypted originals (for admin review)</h2>
+    <p class="muted">Paste the block printed by <code>npm run evidence -- keygen</code>. Originals are then encrypted on this device with that public key; only the private key holder can read them. Leave empty to keep originals off.</p>
+    <textarea id="evidenceConfig" spellcheck="false" placeholder='{ "evidence": { "enabled": true, "public_key_spki": "...", "key_id": "..." } }' style="min-height:90px"></textarea>
+  </section>
+
+  <section>
+    <h2>Policy override (JSON)</h2>
+    <p class="muted">Leave empty to use the bundled default policy. Invalid JSON is ignored and the default stays in force.</p>
+    <textarea id="policyJson" spellcheck="false"></textarea>
+  </section>
+
+  <button id="save" type="button">Save</button>
+  <span id="saved" class="muted"></span>
+</main>
+<script src="options.js"></script>
+</body>
+</html>
